@@ -37,7 +37,7 @@ pub struct Objects<'a> {
 
 /// Loads a Wavefront `.obj` file from disk.
 pub fn from_path(path: &Path) -> Result<Wavefront, Error> {
-    let (models, materials) = tobj::load_obj(path).unwrap();
+    let (models, materials) = tobj::load_obj(path)?;
 
     Ok(Wavefront {
         models: models,
