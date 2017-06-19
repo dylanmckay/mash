@@ -1,4 +1,4 @@
-use {Model, Vertex, Vector, Color, Index, Error};
+use {Model, TriangularMesh, Vertex, Vector, Color, Index, Error};
 use load::Format;
 use tobj;
 
@@ -129,8 +129,10 @@ impl Format for Wavefront
         }
 
         Model {
-            vertices: vertices,
-            indices: indices,
+            mesh: TriangularMesh {
+                vertices: vertices,
+                indices: indices,
+            }
         }
     }
 }
@@ -164,8 +166,10 @@ impl<'a> Format for Object<'a> {
         let vertices = build_vertices(&self.model.mesh);
 
         Model {
-            vertices: vertices,
-            indices: indices,
+            mesh: TriangularMesh {
+                vertices: vertices,
+                indices: indices,
+            }
         }
     }
 }
@@ -208,8 +212,8 @@ mod test {
     fn can_build_file() {
         let cube: Model<Vertex, u64> = Model::new(cube());
 
-        assert_eq!(cube.vertices.len(), 24);
-        assert_eq!(cube.indices.len(), 36);
+        assert_eq!(cube.mesh.vertices.len(), 24);
+        assert_eq!(cube.mesh.indices.len(), 36);
     }
 
     #[test]
@@ -222,8 +226,8 @@ mod test {
     #[test]
     fn can_build_object() {
         let cube: Model<Vertex, u64> = Model::new(cube().objects().next().unwrap());
-        assert_eq!(cube.vertices.len(), 24);
-        assert_eq!(cube.indices.len(), 36);
+        assert_eq!(cube.mesh.vertices.len(), 24);
+        assert_eq!(cube.mesh.indices.len(), 36);
     }
 }
 
