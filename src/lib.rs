@@ -11,7 +11,6 @@ pub mod load;
 pub trait Index : From<u64> { }
 
 impl Index for u64 { }
-use load::Format;
 
 pub struct Model<V: Vertex, I: Index> {
     pub vertices: Vec<V>,
