@@ -3,6 +3,11 @@ name = "model3"
 version = "0.1.0"
 authors = ["Dylan McKay <me@dylanmckay.io>"]
 
+[features]
+default = ["wavefront"]
+
+wavefront = ["tobj"]
+
 [dependencies]
 error-chain = "0.10"
-tobj = "0.1.5"
+tobj = { version = "0.1.5", optional = true }

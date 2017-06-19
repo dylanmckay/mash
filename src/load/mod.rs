@@ -1,3 +1,4 @@
+#[cfg(feature = "wavefront")]
 pub mod wavefront;
 
 use {Model, Vertex, Index};

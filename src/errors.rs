@@ -5,7 +5,7 @@ error_chain! {
 
     foreign_links {
         Io(::std::io::Error);
-        WavefrontLoadError(::tobj::LoadError);
+        WavefrontLoadError(::tobj::LoadError) #[cfg(feature = "wavefront")];
     }
 
     errors {
