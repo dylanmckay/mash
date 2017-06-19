@@ -4,3 +4,5 @@ version = "0.1.0"
 authors = ["Dylan McKay <me@dylanmckay.io>"]
 
 [dependencies]
+error-chain = "0.10"
+tobj = "0.1.5"
