@@ -43,8 +43,10 @@ impl Format for Wavefront
                 indices.push(abs_index);
             }
 
-            for i in 0..model.mesh.positions.len() {
-                let position = build_vector(&model.mesh.positions, i).unwrap();
+            let vertex_count = model.mesh.positions.len() / 3;
+            for i in 0..vertex_count {
+                let base_idx = i * 3;
+                let position = build_vector(&model.mesh.positions, base_idx).unwrap();
                 let normal = build_vector(&model.mesh.normals, i);
                 let texture_coords = build_vector(&model.mesh.texcoords, i);
 
@@ -70,6 +72,33 @@ fn build_vector(elems: &Vec<f32>, base_idx: usize) -> Option<Vector> {
         Some(Vector(elems[base_idx], elems[base_idx+1], elems[base_idx+2]))
     } else {
         None
+    }
+}
+
+impl From<WaveVertex> for Vector {
+    fn from(v: WaveVertex) -> Vector {
+        v.position
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use {Model, Vector};
+    use std::path::Path;
+
+    fn cube() -> Wavefront {
+        from_path(Path::new("res/cube.obj")).unwrap()
+    }
+
+    pub type Vertex = Vector;
+
+    #[test]
+    fn it_works() {
+        let cube: Model<Vertex, u64> = Model::new(cube());
+
+        assert_eq!(cube.vertices.len(), 24);
+        assert_eq!(cube.indices.len(), 36);
     }
 }
 
