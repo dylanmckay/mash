@@ -1,4 +1,4 @@
-use {Model, Vertex, Vector, Index, Error};
+use {Model, Vertex, Vector, Color, Index, Error};
 use load::Format;
 use tobj;
 
@@ -18,13 +18,20 @@ pub struct WaveVertex {
     pub texture_coords: Option<Vector>,
 }
 
+/// A material.
+pub struct Material<'a> {
+    material: &'a tobj::Material,
+}
+
 /// A named object in a Wavefront file.
 pub struct Object<'a> {
+    wavefront: &'a Wavefront,
     model: &'a tobj::Model,
 }
 
 /// An iterator over all objects in a file.
 pub struct Objects<'a> {
+    wavefront: &'a Wavefront,
     models: ::std::slice::Iter<'a, tobj::Model>,
 }
 
@@ -39,9 +46,66 @@ pub fn from_path(path: &Path) -> Result<Wavefront, Error> {
 }
 
 impl Wavefront {
+    /// All of the objects contained within the wavefront.
     pub fn objects(&self) -> Objects {
-        Objects { models: self.models.iter() }
+        Objects { wavefront: self, models: self.models.iter() }
     }
+}
+
+impl<'a> Object<'a> {
+    /// Gets the name of the object.
+    pub fn name(&self) -> &str { &self.model.name }
+
+    /// Gets the material associated with the object.
+    pub fn material(&self) -> Option<Material> {
+        self.model.mesh.material_id.map(|id| {
+            Material { material: &self.wavefront.materials[id] }
+        })
+    }
+}
+
+impl<'a> Material<'a> {
+    /// Gets the name of the material.
+    pub fn name(&self) -> &str { &self.material.name }
+
+    /// Gets the ambient color.
+    pub fn ambient(&self) -> Color {
+        Color(self.material.ambient[0], self.material.ambient[1], self.material.ambient[2])
+    }
+
+    /// Gets the diffuse color.
+    pub fn diffuse(&self) -> Color {
+        Color(self.material.diffuse[0], self.material.diffuse[1], self.material.diffuse[2])
+    }
+
+    /// Gets the specular color.
+    pub fn specular(&self) -> Color {
+        Color(self.material.specular[0], self.material.specular[1], self.material.specular[2])
+    }
+
+    /// Gets the shininess factor.
+    pub fn shininess(&self) -> f32 { self.material.shininess }
+
+    /// Gets the opacity factor.
+    pub fn alpha(&self) -> f32 { self.material.dissolve }
+
+    /// Gets the optical density.
+    pub fn optical_density(&self) -> f32 { self.material.optical_density }
+
+    /// Gets the ambient texture image file.
+    pub fn ambient_texture(&self) -> &str { &self.material.ambient_texture }
+
+    /// Gets the diffuse texture image file.
+    pub fn diffuse_texture(&self) -> &str { &self.material.diffuse_texture }
+
+    /// Gets the specular texture image file.
+    pub fn specular_texture(&self) -> &str { &self.material.specular_texture }
+
+    /// Gets the normal texture image file.
+    pub fn normal_texture(&self) -> &str { &self.material.normal_texture }
+
+    /// Gets the dissolve texture image file.
+    pub fn dissolve_texture(&self) -> &str { &self.material.dissolve_texture }
 }
 
 impl Format for Wavefront
@@ -110,12 +174,8 @@ impl<'a> Iterator for Objects<'a> {
     type Item = Object<'a>;
 
     fn next(&mut self) -> Option<Object<'a>> {
-        self.models.next().map(|m| Object { model: m })
+        self.models.next().map(|m| Object { wavefront: self.wavefront, model: m })
     }
-}
-
-impl<'a> Object<'a> {
-    pub fn name(&self) -> &str { &self.model.name }
 }
 
 fn build_vector(elems: &Vec<f32>, base_idx: usize) -> Option<Vector> {

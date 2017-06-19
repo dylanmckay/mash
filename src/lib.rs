@@ -2,7 +2,7 @@
 extern crate tobj;
 
 pub use self::errors::{Error, ErrorKind, ResultExt, Result};
-pub use self::vertex::{Vertex, Vector};
+pub use self::vertex::{Vertex, Vector, Color};
 
 pub mod errors;
 pub mod vertex;
