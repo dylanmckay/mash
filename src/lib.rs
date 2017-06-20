@@ -20,8 +20,8 @@
 //!     fn position(&self) -> Vector { self.position }
 //! }
 //!
-//! impl From<wavefront::WaveVertex> for Vertex {
-//!     fn from(v: wavefront::WaveVertex) -> Self {
+//! impl From<wavefront::Vertex> for Vertex {
+//!     fn from(v: wavefront::Vertex) -> Self {
 //!         Vertex { position: v.position }
 //!     }
 //! }

@@ -1,6 +1,6 @@
 //! Loader for the Wavefront `.obj` file format.
 
-use {Model, TriangularMesh, BuildModel, Vertex, Vector, Color, Index, Error};
+use {Model, TriangularMesh, BuildModel, Vector, Color, Index, Error};
 use tobj;
 
 use std::path::Path;
@@ -13,7 +13,7 @@ pub struct Wavefront {
 }
 
 /// A vertex.
-pub struct WaveVertex {
+pub struct Vertex {
     pub position: Vector,
     pub normal: Option<Vector>,
     pub texture_coords: Option<Vector>,
@@ -112,10 +112,10 @@ impl<'a> Material<'a> {
 
 impl BuildModel for Wavefront
 {
-    type Vertex = WaveVertex;
+    type Vertex = Vertex;
 
     fn build_model<V,I>(self) -> Result<Model<V,I>, Error>
-        where V: Vertex, I: Index, V: From<WaveVertex> {
+        where V: ::Vertex, I: Index, V: From<Vertex> {
         let mut vertices: Vec<V> = Vec::new();
         let mut indices = Vec::new();
 
@@ -140,7 +140,7 @@ impl BuildModel for Wavefront
 }
 
 fn build_vertices<V>(mesh: &tobj::Mesh) -> Vec<V>
-    where V: From<WaveVertex> {
+    where V: From<Vertex> {
 
     let vertex_count = mesh.positions.len() / 3;
     (0..vertex_count).map(|i| {
@@ -149,7 +149,7 @@ fn build_vertices<V>(mesh: &tobj::Mesh) -> Vec<V>
         let normal = build_vector(&mesh.normals, i);
         let texture_coords = build_vector(&mesh.texcoords, i);
 
-        let wave_vertex = WaveVertex {
+        let wave_vertex = Vertex {
             position: position,
             normal: normal,
             texture_coords: texture_coords,
@@ -160,10 +160,10 @@ fn build_vertices<V>(mesh: &tobj::Mesh) -> Vec<V>
 }
 
 impl<'a> BuildModel for Object<'a> {
-    type Vertex = WaveVertex;
+    type Vertex = Vertex;
 
     fn build_model<V,I>(self) -> Result<Model<V,I>, Error>
-        where V: Vertex, I: Index, V: From<WaveVertex> {
+        where V: ::Vertex, I: Index, V: From<Vertex> {
         let indices: Result<_,_> = self.model.mesh.indices.iter().map(|&index| I::from_u64(index as u64)).collect();
         let indices = indices?;
         let vertices = build_vertices(&self.model.mesh);
@@ -193,8 +193,8 @@ fn build_vector(elems: &Vec<f32>, base_idx: usize) -> Option<Vector> {
     }
 }
 
-impl From<WaveVertex> for Vector {
-    fn from(v: WaveVertex) -> Vector {
+impl From<Vertex> for Vector {
+    fn from(v: Vertex) -> Vector {
         v.position
     }
 }
