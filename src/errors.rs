@@ -13,6 +13,12 @@ error_chain! {
             description("unknown model format")
             display("unknown model format: {}", reason)
         }
+
+        IndexTooSmall(index: u64, bits_available: u8) {
+            description("index too small for mesh")
+            display("index too small for mesh: index '{}' cannot fit in {}-bits",
+                    index, bits_available)
+        }
     }
 }
 

@@ -1,4 +1,4 @@
-use {Vertex, Index, Triangle};
+use {Vertex, Index, Triangle, Error};
 use load;
 
 /// A 3D model.
@@ -24,7 +24,7 @@ pub struct Triangles<'a, V: Vertex+'a, I: Index+'a>
 
 impl<V: Vertex, I: Index> Model<V,I> {
     /// Creates a new model.
-    pub fn new<F>(format: F) -> Self
+    pub fn new<F>(format: F) -> Result<Self, Error>
         where F: load::Format, V: From<F::Vertex> {
         format.build_model()
     }

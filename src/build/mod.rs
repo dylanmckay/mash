@@ -22,7 +22,7 @@ pub fn cube<V,I>(scale: f32) -> TriangularMesh<V,I>
         Vector(-scale,  scale, -scale),
     ].into_iter().map(Into::into).collect();
 
-    let indices: Vec<I> = [
+    let indices: Result<Vec<I>, _> = [
         1, 3, 0,
         7, 5, 4,
         4, 1, 0,
@@ -35,7 +35,8 @@ pub fn cube<V,I>(scale: f32) -> TriangularMesh<V,I>
         5, 6, 2,
         2, 6, 7,
         0, 3, 7,
-    ].iter().cloned().map(Into::into).collect();
+    ].iter().cloned().map(I::from_u64).collect();
+    let indices = indices.unwrap();
 
     TriangularMesh {
         vertices: vertices,

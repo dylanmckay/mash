@@ -112,7 +112,7 @@ impl Format for Wavefront
 {
     type Vertex = WaveVertex;
 
-    fn build_model<V,I>(self) -> Model<V,I>
+    fn build_model<V,I>(self) -> Result<Model<V,I>, Error>
         where V: Vertex, I: Index, V: From<WaveVertex> {
         let mut vertices = Vec::new();
         let mut indices = Vec::new();
@@ -121,19 +121,19 @@ impl Format for Wavefront
             for &index in model.mesh.indices.iter() {
                 // The different objects have indices relative to theirselves.
                 // Adjust the index so that we have the absolute index across all objects.
-                let abs_index = I::from(vertices.len() as u64 + index as u64);
+                let abs_index = I::from_u64(vertices.len() as u64 + index as u64)?;
                 indices.push(abs_index);
             }
 
             vertices.extend(build_vertices(&model.mesh));
         }
 
-        Model {
+        Ok(Model {
             mesh: TriangularMesh {
                 vertices: vertices,
                 indices: indices,
             }
-        }
+        })
     }
 }
 
@@ -160,17 +160,18 @@ fn build_vertices<V>(mesh: &tobj::Mesh) -> Vec<V>
 impl<'a> Format for Object<'a> {
     type Vertex = WaveVertex;
 
-    fn build_model<V,I>(self) -> Model<V,I>
+    fn build_model<V,I>(self) -> Result<Model<V,I>, Error>
         where V: Vertex, I: Index, V: From<WaveVertex> {
-        let indices = self.model.mesh.indices.iter().map(|&index| I::from(index as u64)).collect();
+        let indices: Result<_,_> = self.model.mesh.indices.iter().map(|&index| I::from_u64(index as u64)).collect();
+        let indices = indices?;
         let vertices = build_vertices(&self.model.mesh);
 
-        Model {
+        Ok(Model {
             mesh: TriangularMesh {
                 vertices: vertices,
                 indices: indices,
             }
-        }
+        })
     }
 }
 
@@ -210,7 +211,7 @@ mod test {
 
     #[test]
     fn can_build_file() {
-        let cube: Model<Vertex, u64> = Model::new(cube());
+        let cube: Model<Vertex, u64> = Model::new(cube()).unwrap();
 
         assert_eq!(cube.mesh.vertices.len(), 24);
         assert_eq!(cube.mesh.indices.len(), 36);
@@ -225,7 +226,7 @@ mod test {
 
     #[test]
     fn can_build_object() {
-        let cube: Model<Vertex, u64> = Model::new(cube().objects().next().unwrap());
+        let cube: Model<Vertex, u64> = Model::new(cube().objects().next().unwrap()).unwrap();
         assert_eq!(cube.mesh.vertices.len(), 24);
         assert_eq!(cube.mesh.indices.len(), 36);
     }
