@@ -3,6 +3,15 @@ name = "mash"
 version = "0.1.0"
 authors = ["Dylan McKay <me@dylanmckay.io>"]
 
+description = "A 3D mesh loading/manipulation library"
+
+documentation = "https://docs.rs/mash"
+repository = "https://github.com/dylanmckay/mash"
+readme = "README.md"
+license = "MIT"
+
+keywords = ["3d", "mesh", "model", "wavefront", "obj"]
+
 [features]
 default = ["wavefront"]
 
