@@ -3,8 +3,8 @@
 //! # Loading meshes
 //!
 //! ```
-//! use model3::{load, Model, Vector};
-//! use model3::load::wavefront;
+//! use mash::{load, Model, Vector};
+//! use mash::load::wavefront;
 //! use std::cmp::PartialOrd;
 //! use std::path::Path;
 //!
@@ -16,7 +16,7 @@
 //!     // .. more fields
 //! }
 //!
-//! impl model3::Vertex for Vertex {
+//! impl mash::Vertex for Vertex {
 //!     fn position(&self) -> Vector { self.position }
 //! }
 //!
@@ -32,9 +32,9 @@
 //! # Preprocessing meshes
 //!
 //! ```
-//! use model3::{load, Vector};
+//! use mash::{load, Vector};
 //!
-//! type Model = model3::Model<Vector, u32>;
+//! type Model = mash::Model<Vector, u32>;
 //!
 //! let wavefront = load::wavefront::from_path("res/lighthouse.obj").unwrap();
 //!
