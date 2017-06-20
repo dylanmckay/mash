@@ -1,5 +1,4 @@
-use {Model, TriangularMesh, Vertex, Vector, Color, Index, Error};
-use load::Format;
+use {Model, TriangularMesh, BuildModel, Vertex, Vector, Color, Index, Error};
 use tobj;
 
 use std::path::Path;
@@ -108,7 +107,7 @@ impl<'a> Material<'a> {
     pub fn dissolve_texture(&self) -> &str { &self.material.dissolve_texture }
 }
 
-impl Format for Wavefront
+impl BuildModel for Wavefront
 {
     type Vertex = WaveVertex;
 
@@ -157,7 +156,7 @@ fn build_vertices<V>(mesh: &tobj::Mesh) -> Vec<V>
     }).collect()
 }
 
-impl<'a> Format for Object<'a> {
+impl<'a> BuildModel for Object<'a> {
     type Vertex = WaveVertex;
 
     fn build_model<V,I>(self) -> Result<Model<V,I>, Error>

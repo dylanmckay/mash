@@ -1,5 +1,4 @@
 use {Vertex, Index, Triangle, Error};
-use load;
 
 use std::iter::FromIterator;
 
@@ -7,6 +6,15 @@ use std::iter::FromIterator;
 pub struct Model<V: Vertex, I: Index> {
     /// The mesh that makes up the model.
     pub mesh: TriangularMesh<V, I>,
+}
+
+/// Something which we can build a model out of.
+pub trait BuildModel {
+    /// The vertex type that we need to convert from.
+    type Vertex;
+
+    fn build_model<V,I>(self) -> Result<Model<V,I>, Error>
+        where V: Vertex, I: Index, V: From<Self::Vertex>;
 }
 
 /// A triangular mesh.
@@ -25,14 +33,24 @@ pub struct Triangles<'a, V: Vertex+'a, I: Index+'a>
 }
 
 impl<V: Vertex, I: Index> Model<V,I> {
+    /// Creates an empty mesh.
+    pub fn empty() -> Self {
+        Model { mesh: TriangularMesh::empty() }
+    }
+
     /// Creates a new model.
-    pub fn new<F>(format: F) -> Result<Self, Error>
-        where F: load::Format, V: From<F::Vertex> {
-        format.build_model()
+    pub fn new<F>(builder: F) -> Result<Self, Error>
+        where F: BuildModel, V: From<F::Vertex> {
+        builder.build_model()
     }
 }
 
 impl<V: Vertex, I: Index> TriangularMesh<V,I> {
+    /// Creates an empty triangular mesh.
+    pub fn empty() -> Self {
+        TriangularMesh { vertices: Vec::new(), indices: Vec::new() }
+    }
+
     /// Gets all of the triangles in a mesh.
     pub fn triangles(&self) -> Triangles<V,I> {
         Triangles { mesh: self, indices: self.indices.iter() }
