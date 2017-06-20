@@ -114,7 +114,7 @@ impl Format for Wavefront
 
     fn build_model<V,I>(self) -> Result<Model<V,I>, Error>
         where V: Vertex, I: Index, V: From<WaveVertex> {
-        let mut vertices = Vec::new();
+        let mut vertices: Vec<V> = Vec::new();
         let mut indices = Vec::new();
 
         for model in self.models {
@@ -125,7 +125,7 @@ impl Format for Wavefront
                 indices.push(abs_index);
             }
 
-            vertices.extend(build_vertices(&model.mesh));
+            vertices.extend(build_vertices(&model.mesh).into_iter());
         }
 
         Ok(Model {

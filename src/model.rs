@@ -1,6 +1,8 @@
 use {Vertex, Index, Triangle, Error};
 use load;
 
+use std::iter::FromIterator;
+
 /// A 3D model.
 pub struct Model<V: Vertex, I: Index> {
     /// The mesh that makes up the model.
@@ -37,6 +39,28 @@ impl<V: Vertex, I: Index> TriangularMesh<V,I> {
     }
 }
 
+impl<V,I> FromIterator<Triangle<V>> for TriangularMesh<V,I>
+    where V: Vertex, I: Index
+{
+    fn from_iter<T>(iter: T) -> Self
+        where T: IntoIterator<Item=Triangle<V>> {
+        let triangles: Vec<_> = iter.into_iter().collect();
+
+        let mut vertices: Vec<_> = triangles.iter().flat_map(|tri| tri.vertices.iter().cloned()).collect();
+        vertices.sort_by(|a, b| a.partial_cmp(b).unwrap());
+        vertices.dedup();
+
+        let indices = triangles.iter().flat_map(|tri| {
+            tri.vertices.iter().map(|vert| {
+                let index: u64 = vertices.binary_search_by(|a| a.partial_cmp(vert).unwrap()).unwrap() as u64;
+                I::from_u64(index).expect("index type too small for mesh")
+            })
+        }).collect();
+
+        TriangularMesh { vertices: vertices, indices: indices }
+    }
+}
+
 impl<'a, V: Vertex+'a, I: Index+'a> Iterator for Triangles<'a, V, I> {
     type Item = Triangle<V>;
 
@@ -61,13 +85,29 @@ impl<'a, V: Vertex+'a, I: Index+'a> Iterator for Triangles<'a, V, I> {
 
 #[cfg(test)]
 mod test {
-    use {TriangularMesh, Vector};
+    use {TriangularMesh, Vector, Triangle};
     use build;
 
     #[test]
     fn can_enumerate_triangles() {
         let cube: TriangularMesh<Vector,u64> = build::unit_cube();
         assert_eq!(cube.triangles().count(), 12);
+    }
+
+    #[test]
+    fn can_build_out_of_triangles() {
+        let triangles = vec![
+            Triangle { vertices: [Vector(1.0, 1.0, 1.0), Vector(2.0, 2.0, 2.0), Vector(3.0,3.0,3.0)] },
+            Triangle { vertices: [Vector(5.0, 5.0, 5.0), Vector(6.0, 6.0, 6.0), Vector(7.0,7.0,7.0)] },
+        ];
+
+        let mesh: TriangularMesh<_, u16> = triangles.into_iter().collect();
+        let processed_triangles: Vec<_> = mesh.triangles().collect();
+
+        assert_eq!(processed_triangles, vec![
+            Triangle { vertices: [Vector(1.0, 1.0, 1.0), Vector(2.0, 2.0, 2.0), Vector(3.0,3.0,3.0)] },
+            Triangle { vertices: [Vector(5.0, 5.0, 5.0), Vector(6.0, 6.0, 6.0), Vector(7.0,7.0,7.0)] },
+        ]);
     }
 }
 
