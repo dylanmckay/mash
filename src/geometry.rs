@@ -1,11 +1,22 @@
+/// A 3-dimensional vector.
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Vector(pub f32, pub f32, pub f32);
 
+/// A color.
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Color(pub f32, pub f32, pub f32);
 
-pub trait Vertex {
+/// A vertex.
+pub trait Vertex : Clone {
+    /// Get the position of the vertex.
     fn position(&self) -> Vector;
+}
+
+/// A triangle.
+#[derive(Debug, PartialEq)]
+pub struct Triangle<V: Vertex> {
+    /// The vertices that make up the triangle.
+    pub vertices: [V; 3],
 }
 
 // Allow (x,y,z) pairs to work as vectors.
