@@ -1,3 +1,5 @@
+//! Loader for the Wavefront `.obj` file format.
+
 use {Model, TriangularMesh, BuildModel, Vertex, Vector, Color, Index, Error};
 use tobj;
 
@@ -35,8 +37,9 @@ pub struct Objects<'a> {
 }
 
 /// Loads a Wavefront `.obj` file from disk.
-pub fn from_path(path: &Path) -> Result<Wavefront, Error> {
-    let (models, materials) = tobj::load_obj(path)?;
+pub fn from_path<S>(path: S) -> Result<Wavefront, Error>
+    where S: AsRef<Path> {
+    let (models, materials) = tobj::load_obj(path.as_ref())?;
 
     Ok(Wavefront {
         models: models,

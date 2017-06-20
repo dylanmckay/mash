@@ -1,3 +1,5 @@
+//! The `Index` trait definition.
+
 use {Error, ErrorKind};
 use std;
 

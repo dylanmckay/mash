@@ -1,3 +1,4 @@
+//! Format-independent mesh representation.
 use {Vertex, Index, Triangle, Error};
 
 use std::iter::FromIterator;

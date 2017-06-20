@@ -1,3 +1,5 @@
+//! Mesh builders.
+
 use {TriangularMesh, Vertex, Index, Vector};
 
 /// Creates a cube with a side length of one.

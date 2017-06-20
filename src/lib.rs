@@ -1,3 +1,51 @@
+//! 3d mesh library.
+//!
+//! # Loading meshes
+//!
+//! ```
+//! use model3::{load, Model, Vector};
+//! use model3::load::wavefront;
+//! use std::cmp::PartialOrd;
+//! use std::path::Path;
+//!
+//! type Index = u16;
+//!
+//! #[derive(Clone, Debug, PartialEq, PartialOrd)]
+//! pub struct Vertex {
+//!     pub position: Vector,
+//!     // .. more fields
+//! }
+//!
+//! impl model3::Vertex for Vertex {
+//!     fn position(&self) -> Vector { self.position }
+//! }
+//!
+//! impl From<wavefront::WaveVertex> for Vertex {
+//!     fn from(v: wavefront::WaveVertex) -> Self {
+//!         Vertex { position: v.position }
+//!     }
+//! }
+//!
+//! let model: Model<Vertex, Index> = Model::new(load::wavefront::from_path("res/cube.obj").unwrap()).unwrap();
+//! ```
+//!
+//! # Preprocessing meshes
+//!
+//! ```
+//! use model3::{load, Vector};
+//!
+//! type Model = model3::Model<Vector, u32>;
+//!
+//! let wavefront = load::wavefront::from_path("res/lighthouse.obj").unwrap();
+//!
+//! let pylon_obj = wavefront.objects().find(|o| o.name() == "pylon_rectangle").unwrap();
+//! let light_obj = wavefront.objects().find(|o| o.name() == "rotating_lights_cylinder").unwrap();
+//!
+//! // Can render the two models separately, with different transforms if necessary.
+//! let pylon: Model = Model::new(pylon_obj).unwrap();
+//! let lights: Model = Model::new(light_obj).unwrap();
+//! ```
+
 #[macro_use] extern crate error_chain;
 
 #[cfg(feature = "wavefront")]

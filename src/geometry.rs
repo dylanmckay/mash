@@ -1,3 +1,5 @@
+//! Geometric type definitions.
+
 use std::fmt::Debug;
 
 /// A 3-dimensional vector.
