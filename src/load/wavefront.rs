@@ -8,7 +8,6 @@ use std::path::Path;
 /// A wavefront model.
 pub struct Wavefront {
     models: Vec<tobj::Model>,
-    #[allow(dead_code)]
     materials: Vec<tobj::Material>,
 }
 
@@ -71,17 +70,17 @@ impl<'a> Material<'a> {
     pub fn name(&self) -> &str { &self.material.name }
 
     /// Gets the ambient color.
-    pub fn ambient(&self) -> Color {
+    pub fn ambient_color(&self) -> Color {
         Color(self.material.ambient[0], self.material.ambient[1], self.material.ambient[2])
     }
 
     /// Gets the diffuse color.
-    pub fn diffuse(&self) -> Color {
+    pub fn diffuse_color(&self) -> Color {
         Color(self.material.diffuse[0], self.material.diffuse[1], self.material.diffuse[2])
     }
 
     /// Gets the specular color.
-    pub fn specular(&self) -> Color {
+    pub fn specular_color(&self) -> Color {
         Color(self.material.specular[0], self.material.specular[1], self.material.specular[2])
     }
 
