@@ -18,5 +18,5 @@ default = ["wavefront"]
 wavefront = ["tobj"]
 
 [dependencies]
-error-chain = "0.12"
-tobj = { version = "0.1.6", optional = true }
+error-chain = "^0.12"
+tobj = { version = "^1.0", optional = true }
