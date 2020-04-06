@@ -18,7 +18,7 @@ you want to enable.
 
 ```toml
 [dependencies]
-mash = { version = "*", default-features = false, features = ["wavefront"]}
+mash = { version = "1.0", default-features = false, features = ["wavefront"]}
 ```
 
 ## Architecture
