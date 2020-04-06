@@ -2,8 +2,10 @@
 use {Vertex, Index, Triangle, Error};
 
 use std::iter::FromIterator;
+use std::fmt;
 
 /// A 3D model.
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Model<V: Vertex, I: Index> {
     /// The mesh that makes up the model.
     pub mesh: TriangularMesh<V, I>,
@@ -19,6 +21,7 @@ pub trait BuildModel {
 }
 
 /// A triangular mesh.
+#[derive(Clone, PartialEq, Eq)]
 pub struct TriangularMesh<V: Vertex, I: Index> {
     /// The vertex list.
     pub vertices: Vec<V>,
@@ -43,6 +46,22 @@ impl<V: Vertex, I: Index> Model<V,I> {
     pub fn new<F>(builder: F) -> Result<Self, Error>
         where F: BuildModel, V: From<F::Vertex> {
         builder.build_model()
+    }
+}
+
+impl<V: Vertex, I: Index> fmt::Debug for TriangularMesh<V,I> {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        // Create a trait for debug printing.
+        #[derive(Debug)]
+        struct TriangularMesh {
+            pub vertex_count: usize,
+            pub index_count: usize,
+        }
+
+        TriangularMesh {
+            vertex_count: self.vertices.len(),
+            index_count: self.indices.len(),
+        }.fmt(fmt)
     }
 }
 
@@ -88,7 +107,7 @@ impl<'a, V: Vertex+'a, I: Index+'a> Iterator for Triangles<'a, V, I> {
             let i2 = self.indices.next().expect("expected at least two more indices");
             let i3 = self.indices.next().expect("expected at least one more index");
 
-            let vertices: Vec<_> = [i1,i2,i3].into_iter().map(|&&idx| {
+            let vertices: Vec<_> = [i1,i2,i3].iter().map(|&&idx| {
                 let idx: u64 = idx.into();
                 self.mesh.vertices[idx as usize].clone()
             }).collect();

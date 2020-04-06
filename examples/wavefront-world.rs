@@ -17,11 +17,17 @@ fn main() {
         Model::new(object).unwrap()
     }).collect();
 
+    for door in doors {
+        println!("door model: {:?}", door);
+    }
+
     // We can also load the entire world into a single model if we wanted.
     let entire_world = Model::new(world).unwrap();
 
     // Skip every second triangle if that's your kind of thing.
     let half_triangles = entire_world.mesh.triangles().enumerate().filter(|&(idx,_)| idx%2 == 0).map(|(_,t)| t);
     let half_world: Model = Model { mesh: half_triangles.collect() };
+
+    println!("half world: {:?}", half_world);
 }
 
