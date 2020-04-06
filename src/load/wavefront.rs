@@ -3,6 +3,8 @@
 use {Model, TriangularMesh, BuildModel, Vector, Color, Index, Error};
 use tobj;
 
+use std::fs;
+use std::io::BufRead;
 use std::path::Path;
 
 /// A wavefront model.
@@ -36,9 +38,30 @@ pub struct Objects<'a> {
 }
 
 /// Loads a Wavefront `.obj` file from disk.
+///
+/// Material files will be automatically loaded.
 pub fn from_path<S>(path: S) -> Result<Wavefront, Error>
     where S: AsRef<Path> {
     let (models, materials) = tobj::load_obj(path.as_ref())?;
+
+    Ok(Wavefront {
+        models: models,
+        materials: materials,
+    })
+}
+
+/// Loads a Wavefront `.obj` file from memory.
+///
+/// You must provide a closure that maps each material file path
+/// to its corresponding byte stream.
+pub fn from_memory<BO, BM>(reader: &mut BO,
+                           material_loader: impl Fn(&Path) -> BM)
+    -> Result<Wavefront, Error>
+    where BO: BufRead, BM: BufRead {
+    let (models, materials) = tobj::load_obj_buf(reader, |mtl_path| {
+        let mut mtl_reader = material_loader(mtl_path);
+        tobj::load_mtl_buf(&mut mtl_reader)
+    })?;
 
     Ok(Wavefront {
         models: models,
