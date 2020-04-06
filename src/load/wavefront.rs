@@ -3,7 +3,6 @@
 use {Model, TriangularMesh, BuildModel, Vector, Color, Index, Error};
 use tobj;
 
-use std::fs;
 use std::io::BufRead;
 use std::path::Path;
 
