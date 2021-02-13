@@ -19,4 +19,4 @@ wavefront = ["tobj"]
 
 [dependencies]
 error-chain = "^0.12"
-tobj = { version = "^1.0", optional = true }
+tobj = { version = "^2.0", optional = true }

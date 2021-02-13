@@ -41,7 +41,7 @@ pub struct Objects<'a> {
 /// Material files will be automatically loaded.
 pub fn from_path<S>(path: S) -> Result<Wavefront, Error>
     where S: AsRef<Path> {
-    let (models, materials) = tobj::load_obj(path.as_ref())?;
+    let (models, materials) = tobj::load_obj(path.as_ref(), true)?;
 
     Ok(Wavefront {
         models: models,
@@ -57,7 +57,7 @@ pub fn from_memory<BO, BM>(reader: &mut BO,
                            material_loader: impl Fn(&Path) -> BM)
     -> Result<Wavefront, Error>
     where BO: BufRead, BM: BufRead {
-    let (models, materials) = tobj::load_obj_buf(reader, |mtl_path| {
+    let (models, materials) = tobj::load_obj_buf(reader, true, |mtl_path| {
         let mut mtl_reader = material_loader(mtl_path);
         tobj::load_mtl_buf(&mut mtl_reader)
     })?;
